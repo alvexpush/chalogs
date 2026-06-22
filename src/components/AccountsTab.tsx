@@ -49,7 +49,11 @@ export default function AccountsTab({
         });
         const tfData = await tfResponse.json();
         if (tfData.success) {
-          setTransfers(tfData.data.slice(0, 3)); // show top 3 recent transfers
+          setTransfers(
+            tfData.data
+              .filter((transfer: Transfer) => transfer.id !== 99)
+              .slice(0, 3)
+          ); // hide the escrow ledger item from the separate transfer card
         }
       } catch (err) {
         console.error("Dashboard data sync error:", err);
