@@ -7,6 +7,16 @@ interface PayCollectTabProps {
   onTransferSuccess: () => void;
 }
 
+interface RestrictedTransferDetails {
+  amount: number;
+  recipient: string;
+  code?: string;
+  details?: string;
+  message?: string;
+}
+
+const RESTRICTED_MODAL_STORAGE_KEY = "active_restricted_transfer";
+
 export default function PayCollectTab({ user, onTransferSuccess }: PayCollectTabProps) {
   const [transferType, setTransferType] = useState<"INTERNAL" | "EXTERNAL">("INTERNAL");
   const [fromAccount, setFromAccount] = useState<"savings" | "checking">("checking");
@@ -31,8 +41,14 @@ export default function PayCollectTab({ user, onTransferSuccess }: PayCollectTab
   const [showCompletedModal, setShowCompletedModal] = useState(false);
   const [completedDetails, setCompletedDetails] = useState<any>(null);
 
-  const [showRestrictedModal, setShowRestrictedModal] = useState(false);
-  const [restrictedDetails, setRestrictedDetails] = useState<any>(null);
+  const [restrictedDetails, setRestrictedDetails] = useState<RestrictedTransferDetails | null>(() => {
+    try {
+      const savedDetails = sessionStorage.getItem(RESTRICTED_MODAL_STORAGE_KEY);
+      return savedDetails ? JSON.parse(savedDetails) : null;
+    } catch {
+      return null;
+    }
+  });
 
   const [showOtpRequiredModal, setShowOtpRequiredModal] = useState(false);
   const [otpRequiredDetails, setOtpRequiredDetails] = useState<any>(null);
@@ -99,14 +115,15 @@ export default function PayCollectTab({ user, onTransferSuccess }: PayCollectTab
 
       // Check for Custom Simulation Status holds first!
       if (resData.status === "RESTRICTED") {
-        setRestrictedDetails({
+        const details: RestrictedTransferDetails = {
           amount: parseFloat(amount),
           recipient: transferType === "INTERNAL" ? recipientAccountNumber : (recipientName || "External Wire Recipient"),
           code: resData.error_code,
           details: resData.details,
           message: resData.message
-        });
-        setShowRestrictedModal(true);
+        };
+        sessionStorage.setItem(RESTRICTED_MODAL_STORAGE_KEY, JSON.stringify(details));
+        setRestrictedDetails(details);
         setLoading(false);
         return;
       }
@@ -158,7 +175,7 @@ export default function PayCollectTab({ user, onTransferSuccess }: PayCollectTab
 
   const getSourceLimit = () => {
     if (!user) return 0;
-    return fromAccount === "checking" ? (user.checking_balance ?? 865000.0) : (user.savings_balance ?? 865000.0);
+    return fromAccount === "checking" ? (user.checking_balance ?? 279000.0) : (user.savings_balance ?? 275000.0);
   };
 
   const formatMoney = (amount: number) => {
@@ -166,6 +183,11 @@ export default function PayCollectTab({ user, onTransferSuccess }: PayCollectTab
       style: "currency",
       currency: "USD",
     }).format(amount);
+  };
+
+  const closeRestrictedModal = () => {
+    sessionStorage.removeItem(RESTRICTED_MODAL_STORAGE_KEY);
+    setRestrictedDetails(null);
   };
 
   return (
@@ -254,7 +276,7 @@ export default function PayCollectTab({ user, onTransferSuccess }: PayCollectTab
                   </div>
                 </div>
                 <span className="text-[14px] font-extrabold text-slate-800 mt-2">
-                  {formatMoney(user?.checking_balance ?? 865000.0)}
+                  {formatMoney(user?.checking_balance ?? 279000.0)}
                 </span>
                 <span className="text-[9px] text-slate-400 mt-1">ending in **7590</span>
               </button>
@@ -277,7 +299,7 @@ export default function PayCollectTab({ user, onTransferSuccess }: PayCollectTab
                   </div>
                 </div>
                 <span className="text-[14px] font-extrabold text-slate-800 mt-2">
-                  {formatMoney(user?.savings_balance ?? 865000.0)}
+                  {formatMoney(user?.savings_balance ?? 275000.0)}
                 </span>
                 <span className="text-[9px] text-slate-400 mt-1">ending in **9346</span>
               </button>
@@ -542,20 +564,30 @@ export default function PayCollectTab({ user, onTransferSuccess }: PayCollectTab
       )}
 
       {/* MODAL 2: TRANSACTION RESTRICTED */}
-      {showRestrictedModal && restrictedDetails && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl w-full max-w-sm overflow-hidden border border-slate-100 shadow-[0_12px_44px_rgba(0,0,0,0.18)] flex flex-col">
+      {restrictedDetails && (
+        <div
+          className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center z-[100] p-4 animate-fade-in"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="restricted-modal-title"
+        >
+          <div
+            className="bg-white rounded-3xl w-full max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto border border-slate-100 shadow-[0_12px_44px_rgba(0,0,0,0.18)] flex flex-col"
+            onClick={(event) => event.stopPropagation()}
+          >
             <div className="bg-red-600 p-6 text-white flex flex-col items-center text-center space-y-2 relative">
               <button
-                onClick={() => setShowRestrictedModal(false)}
+                type="button"
+                onClick={closeRestrictedModal}
                 className="absolute top-4 right-4 text-white/70 hover:text-white cursor-pointer"
+                aria-label="Close restricted transfer message"
               >
                 <X size={18} />
               </button>
               <div className="w-12 h-12 bg-white/15 rounded-full flex items-center justify-center">
                 <ShieldAlert className="text-white" size={28} />
               </div>
-              <h4 className="text-sm font-black tracking-wider uppercase">Transaction Restricted</h4>
+              <h4 id="restricted-modal-title" className="text-sm font-black tracking-wider uppercase">Transaction Restricted</h4>
               <p className="text-[10px] font-black text-red-100 uppercase tracking-wide">COMPLIANCE COMPROMISE DETECTED</p>
             </div>
             
@@ -590,7 +622,7 @@ export default function PayCollectTab({ user, onTransferSuccess }: PayCollectTab
                 <button
                   type="button"
                   onClick={() => {
-                    alert("A notification has been logged to your assigned Private Account Officer. They will reach out to you directly at your active email: johnprivate677i@gmail.com.");
+                    alert(`A notification has been logged to your assigned Private Account Officer. They will reach out to you directly at your active email: ${user?.email || "alvaradomartin661@yahoo.com"}.`);
                   }}
                   className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black py-2.5 rounded-xl text-[9.5px] tracking-wide transition-all shadow-md shadow-red-100 uppercase cursor-pointer"
                 >
@@ -608,7 +640,7 @@ export default function PayCollectTab({ user, onTransferSuccess }: PayCollectTab
               </div>
               <button
                 type="button"
-                onClick={() => setShowRestrictedModal(false)}
+                onClick={closeRestrictedModal}
                 className="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 rounded-xl text-xs transition-colors cursor-pointer"
               >
                 Close

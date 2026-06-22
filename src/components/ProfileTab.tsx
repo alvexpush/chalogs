@@ -1,6 +1,7 @@
 import React from "react";
 import { User as UserIcon, Mail, ShieldAlert, Key, Globe, MapPin, User, Briefcase, Calendar, Fingerprint, Lock, ShieldCheck, LogOut, Building, Tag } from "lucide-react";
 import { User as UserType } from "../types";
+import profilePicture from "@/profilepic.jpg";
 
 interface ProfileTabProps {
   user: UserType | null;
@@ -25,12 +26,13 @@ export default function ProfileTab({ user, onLogout }: ProfileTabProps) {
   };
 
   const getFullStreetAddress = () => {
-    let parts = [];
+    const parts = [];
     if (user.full_address) parts.push(user.full_address);
-    if (user.city) parts.push(user.city);
-    if (user.state) parts.push(user.state);
+    if (user.mailing_city) parts.push(user.mailing_city);
+    const region = [user.state, user.postal_code].filter(Boolean).join(" ");
+    if (region) parts.push(region);
     if (user.country) parts.push(user.country);
-    return parts.length > 0 ? parts.join(", ") : "2205 Terrell Pl, Charlotte, North Carolina, USA";
+    return parts.length > 0 ? parts.join(", ") : "PO Box #132, Van Nuys, California 91408, US";
   };
 
   const getFullName = () => {
@@ -49,9 +51,14 @@ export default function ProfileTab({ user, onLogout }: ProfileTabProps) {
         <div className="absolute left-[-20px] bottom-[-20px] w-36 h-36 bg-slate-800/40 rounded-full blur-2xl pointer-events-none"></div>
 
         <div className="relative flex flex-col items-center text-center space-y-3 z-10">
+          <img
+            src={profilePicture}
+            alt={`${getFullName()} profile`}
+            className="w-20 h-20 rounded-full object-cover border-4 border-white/20 shadow-lg"
+          />
           <div className="flex flex-col">
             <span className="text-lg font-black tracking-tight">{getFullName()}</span>
-            <span className="text-[#a0aec0] text-xs font-bold tracking-wider uppercase mt-1">@ {user.username || "johncamo"}</span>
+            <span className="text-[#a0aec0] text-xs font-bold tracking-wider uppercase mt-1">@ {user.username || "Martin Castillo"}</span>
           </div>
 
           <div className="inline-flex items-center space-x-1.5 bg-[#1169ca]/30 border border-blue-500/20 py-1.5 px-3.5 rounded-full text-[10px] font-extrabold tracking-widest uppercase text-blue-200">
@@ -62,20 +69,12 @@ export default function ProfileTab({ user, onLogout }: ProfileTabProps) {
       </div>
 
       {/* 2. Key Metrics Block */}
-      <div className="grid grid-cols-2 gap-3">
+      <div>
         <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-[0_4px_16px_rgba(0,0,0,0.015)]">
           <span className="text-[#718096] text-[10px] font-black uppercase tracking-wider block">Available Balance</span>
           <span className="text-xl font-extrabold text-[#0a2342] mt-1.5 block">
-            {formatMoney(user.balance || 1730000)}
+            {formatMoney(user.balance || 554000)}
           </span>
-        </div>
-        <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-[0_4px_16px_rgba(0,0,0,0.015)] flex flex-col justify-between">
-          <div>
-            <span className="text-[#718096] text-[10px] font-black uppercase tracking-wider block">Billing Message</span>
-            <span className="text-xs font-bold text-slate-700 mt-1 block italic leading-tight">
-              {user.billing_message || "Active and certified"}
-            </span>
-          </div>
         </div>
       </div>
 
@@ -103,11 +102,11 @@ export default function ProfileTab({ user, onLogout }: ProfileTabProps) {
             </div>
             <div className="flex justify-between border-b border-slate-50 pb-2">
               <span className="text-slate-400 font-semibold">Branch Information</span>
-              <span className="text-slate-800 font-bold text-right max-w-[190px] truncate">Charlotte NC Downtown Private Branch</span>
+              <span className="text-slate-800 font-bold text-right max-w-[190px] truncate">Los Angeles CA Private Branch</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400 font-semibold">Date Joined</span>
-              <span className="text-slate-800 font-bold">January 14, 2018</span>
+              <span className="text-slate-800 font-bold">Not provided</span>
             </div>
           </div>
         </div>
@@ -122,15 +121,15 @@ export default function ProfileTab({ user, onLogout }: ProfileTabProps) {
           <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-xs">
             <div>
               <span className="text-slate-400 block font-semibold mb-0.5">Surname</span>
-              <span className="text-slate-800 font-extrabold">{user.surname || "John"}</span>
+              <span className="text-slate-800 font-extrabold">{user.surname || "Martin"}</span>
             </div>
             <div>
               <span className="text-slate-400 block font-semibold mb-0.5">Middle Name</span>
-              <span className="text-slate-800 font-extrabold">{user.middle_name || "camo"}</span>
+              <span className="text-slate-800 font-extrabold">{user.middle_name || "Alvarado"}</span>
             </div>
             <div>
               <span className="text-slate-400 block font-semibold mb-0.5">Last Name</span>
-              <span className="text-slate-800 font-extrabold">{user.last_name || "smith"}</span>
+              <span className="text-slate-800 font-extrabold">{user.last_name || "Castillo"}</span>
             </div>
             <div>
               <span className="text-slate-400 block font-semibold mb-0.5">Gender</span>
@@ -141,14 +140,14 @@ export default function ProfileTab({ user, onLogout }: ProfileTabProps) {
                 <Calendar size={11} />
                 <span>Date of Birth</span>
               </span>
-              <span className="text-slate-800 font-extrabold">{user.date_of_birth || "January 14, 1971"}</span>
+              <span className="text-slate-800 font-extrabold">{user.date_of_birth || "August 5, 1968"}</span>
             </div>
             <div>
               <span className="text-slate-400 block font-semibold mb-0.5 flex items-center space-x-1">
                 <Briefcase size={11} />
                 <span>Occupation</span>
               </span>
-              <span className="text-slate-800 font-extrabold">{user.occupation || "contractor"}</span>
+              <span className="text-slate-800 font-extrabold">{user.occupation || "Chauffeur"}</span>
             </div>
           </div>
         </div>
@@ -171,7 +170,22 @@ export default function ProfileTab({ user, onLogout }: ProfileTabProps) {
               </div>
               <div>
                 <span className="text-slate-400 block font-semibold mb-0.5">Phone Number</span>
-                <span className="text-slate-800 font-mono font-bold">{user.phone || "+1 (704) 583-9102"}</span>
+                <span className="text-slate-800 font-mono font-bold">{user.phone || "Not provided"}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 border-t border-slate-50 pt-3">
+              <div>
+                <span className="text-slate-400 block font-semibold mb-0.5">City</span>
+                <span className="text-slate-800 font-bold">{user.city || "Los Angeles"}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 block font-semibold mb-0.5">State</span>
+                <span className="text-slate-800 font-bold">{user.state || "California"}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 block font-semibold mb-0.5">Country</span>
+                <span className="text-slate-800 font-bold">{user.country || "US"}</span>
               </div>
             </div>
 

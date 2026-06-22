@@ -88,7 +88,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   };
 
   const setLoginPreset = () => {
-    setEmail("johnprivate677i@gmail.com");
+    setEmail("alvaradomartin661@yahoo.com");
     setPassword("cupcake123456");
   };
 

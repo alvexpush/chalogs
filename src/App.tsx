@@ -15,7 +15,12 @@ export default function App() {
   
   // Navigation layout state matching screenshot bottom bar
   // Selection modes: "accounts" | "pay" | "transactions" | "profile"
-  const [activeTab, setActiveTab] = useState<"accounts" | "pay" | "transactions" | "profile">("accounts");
+  const [activeTab, setActiveTab] = useState<"accounts" | "pay" | "transactions" | "profile">(() => {
+    const savedTab = sessionStorage.getItem("active_app_tab");
+    return savedTab === "pay" || savedTab === "transactions" || savedTab === "profile"
+      ? savedTab
+      : "accounts";
+  });
   
   // Carousel selector alignment between screens
   const [selectedAccountType, setSelectedAccountType] = useState<"all" | "savings" | "checking">("savings");
@@ -52,6 +57,10 @@ export default function App() {
     }
   }, [token]);
 
+  useEffect(() => {
+    sessionStorage.setItem("active_app_tab", activeTab);
+  }, [activeTab]);
+
   const handleLoginSuccess = (newToken: string) => {
     localStorage.setItem("session_token", newToken);
     setToken(newToken);
@@ -68,6 +77,8 @@ export default function App() {
       // Ignored
     }
     localStorage.removeItem("session_token");
+    sessionStorage.removeItem("active_app_tab");
+    sessionStorage.removeItem("active_restricted_transfer");
     setToken(null);
     setUser(null);
   };

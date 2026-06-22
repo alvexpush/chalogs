@@ -63,9 +63,9 @@ export default function TransactionsTab({
   };
 
   const getActiveBalance = () => {
-    if (!user) return 1730000.0;
-    if (selectedAccountType === "savings") return user.savings_balance ?? 865000.0;
-    if (selectedAccountType === "checking") return user.checking_balance ?? 865000.0;
+    if (!user) return 554000.0;
+    if (selectedAccountType === "savings") return user.savings_balance ?? 275000.0;
+    if (selectedAccountType === "checking") return user.checking_balance ?? 279000.0;
     return user.balance; // All
   };
 
@@ -190,7 +190,7 @@ export default function TransactionsTab({
             </div>
             <div className="flex flex-col">
               <span className="text-[15px] font-extrabold tracking-tight leading-tight">
-                {formatMoney(user?.balance || 1730000.0)}
+                {formatMoney(user?.balance || 554000.0)}
               </span>
               <span className="text-[9px] flex items-center mt-0.5 font-medium text-emerald-500">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span>
@@ -216,7 +216,7 @@ export default function TransactionsTab({
             </div>
             <div className="flex flex-col">
               <span className="text-[15px] font-extrabold tracking-tight leading-tight">
-                {formatMoney(user?.savings_balance ?? 865000.0)}
+                {formatMoney(user?.savings_balance ?? 275000.0)}
               </span>
               <span className="text-[9px] flex items-center mt-0.5 font-medium text-emerald-500">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span>
@@ -242,7 +242,7 @@ export default function TransactionsTab({
             </div>
             <div className="flex flex-col">
               <span className="text-[15px] font-extrabold tracking-tight leading-tight">
-                {formatMoney(user?.checking_balance ?? 865000.0)}
+                {formatMoney(user?.checking_balance ?? 279000.0)}
               </span>
               <span className="text-[9px] flex items-center mt-0.5 font-medium text-emerald-500">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span>
@@ -463,8 +463,8 @@ export default function TransactionsTab({
                         Bal:{" "}
                         {formatMoney(
                           tx.from_account === "checking"
-                            ? user?.checking_balance ?? 865000.0
-                            : user?.savings_balance ?? 865000.0
+                            ? user?.checking_balance ?? 279000.0
+                            : user?.savings_balance ?? 275000.0
                         )}
                       </span>
                     </div>

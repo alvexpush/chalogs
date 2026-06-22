@@ -1,6 +1,8 @@
 import React from "react";
 import { Search, Bell, Plus } from "lucide-react";
 import { User } from "../types";
+import appLogo from "@/download (4).png";
+import profilePicture from "@/profilepic.jpg";
 
 interface HeaderProps {
   user: User | null;
@@ -50,10 +52,14 @@ export default function Header({ user, onOpenQuickTransfer, onNavigateToProfile 
           <button
             onClick={onNavigateToProfile}
             type="button"
-            className="w-10 h-10 bg-white/12 hover:bg-white/20 border border-white/10 text-white rounded-full flex items-center justify-center text-[13px] font-bold tracking-wider cursor-pointer transition-all"
+            className="w-10 h-10 bg-white/12 hover:bg-white/20 border-2 border-white/30 text-white rounded-full overflow-hidden flex items-center justify-center cursor-pointer transition-all"
             title="Profile details"
           >
-            {getInitials()}
+            <img
+              src={profilePicture}
+              alt={`${getGreetingName()} profile`}
+              className="w-full h-full object-cover"
+            />
           </button>
         </div>
       </div>
@@ -61,12 +67,11 @@ export default function Header({ user, onOpenQuickTransfer, onNavigateToProfile 
       {/* Brand & Personal Greeting Row */}
       <div className="flex items-center justify-between pt-1">
         <div className="flex items-center space-x-3">
-          {/* Mini Image Logo (User will edit the picture later) */}
+          {/* App logo */}
           <img
-            src="https://picsum.photos/seed/mini-logo-placeholder/80/80"
-            alt="App Logo"
-            className="w-10 h-10 rounded-full object-cover border border-white/20 shrink-0"
-            referrerPolicy="no-referrer"
+            src={appLogo}
+            alt="Chase logo"
+            className="w-10 h-10 rounded-xl object-contain bg-white border border-white/30 shrink-0"
           />
 
           {/* Dynamic Personalized Name */}

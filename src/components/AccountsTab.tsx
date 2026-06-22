@@ -131,13 +131,13 @@ export default function AccountsTab({
   };
 
   const getSavingsBalance = () => {
-    if (!user) return 865000.0;
-    return user.savings_balance ?? user.balance * 0.5;
+    if (!user) return 275000.0;
+    return user.savings_balance ?? 275000.0;
   };
 
   const getCheckingBalance = () => {
-    if (!user) return 865000.0;
-    return user.checking_balance ?? user.balance * 0.7;
+    if (!user) return 279000.0;
+    return user.checking_balance ?? 279000.0;
   };
 
   const formatTxDate = (isoStr: string) => {

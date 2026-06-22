@@ -23,6 +23,8 @@ export interface User {
   gender?: string;
   occupation?: string;
   full_address?: string;
+  mailing_city?: string;
+  postal_code?: string;
   billing_message?: string;
   password?: string;
   pin?: string;
